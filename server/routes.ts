@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/programs/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const program = await storage.getProgramById(id, userId);
       
@@ -55,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/programs", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertProgramSchema.parse(req.body);
       const program = await storage.createProgram(validatedData, userId);
       res.status(201).json(program);
@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/programs/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const validatedData = insertProgramSchema.partial().parse(req.body);
       const program = await storage.updateProgram(id, validatedData, userId);
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/programs/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const success = await storage.deleteProgram(id, userId);
       
@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Project routes
   app.get("/api/projects", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const programId = req.query.programId;
       
       let projects;
@@ -128,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/projects/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const project = await storage.getProjectById(id, userId);
       
@@ -145,7 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/projects", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertProjectSchema.parse(req.body);
       const project = await storage.createProject(validatedData, userId);
       res.status(201).json(project);
@@ -160,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/projects/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const validatedData = insertProjectSchema.partial().parse(req.body);
       const project = await storage.updateProject(id, validatedData, userId);
@@ -181,7 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/projects/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       const success = await storage.deleteProject(id, userId);
       
@@ -199,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import routes
   app.post("/api/import/excel", isAuthenticated, upload.single('file'), async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -283,7 +283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/import/history", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const history = await storage.getImportHistory(userId);
       res.json(history);
     } catch (error) {
@@ -295,7 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Statistics route
   app.get("/api/statistics", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const programs = await storage.getPrograms(userId);
       const projects = await storage.getProjects(userId);
 
