@@ -1,84 +1,73 @@
 import {
-  pgTable,
   text,
-  varchar,
-  timestamp,
-  jsonb,
-  index,
-  serial,
   integer,
-  decimal,
-  date,
-  boolean,
-} from "drizzle-orm/pg-core";
+  sqliteTable,
+  real,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table (required for Replit Auth)
-export const sessions = pgTable(
-  "sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_session_expire").on(table.expire)],
-);
+export const sessions = sqliteTable("sessions", {
+  sid: text("sid").primaryKey(),
+  sess: text("sess").notNull(),
+  expire: integer("expire", { mode: "timestamp" }).notNull(),
+});
 
 // User storage table
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  password: varchar("password").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey().notNull(),
+  email: text("email").unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  profileImageUrl: text("profile_image_url"),
+  password: text("password").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).defaultNow(),
 });
 
 // Programs table
-export const programs = pgTable("programs", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const programs = sqliteTable("programs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
   description: text("description"),
-  category: varchar("category", { length: 100 }).notNull(),
-  status: varchar("status", { length: 50 }).notNull().default("active"),
-  budget: decimal("budget", { precision: 12, scale: 2 }).notNull(),
-  startDate: date("start_date").notNull(),
-  endDate: date("end_date"),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  category: text("category").notNull(),
+  status: text("status").notNull().default("active"),
+  budget: real("budget").notNull(),
+  startDate: integer("start_date", { mode: "timestamp" }).notNull(),
+  endDate: integer("end_date", { mode: "timestamp" }),
+  userId: text("user_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).defaultNow(),
 });
 
 // Projects table
-export const projects = pgTable("projects", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
+export const projects = sqliteTable("projects", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
   description: text("description"),
   programId: integer("program_id").notNull(),
-  status: varchar("status", { length: 50 }).notNull().default("not-started"),
-  priority: varchar("priority", { length: 20 }).notNull().default("medium"),
-  budget: decimal("budget", { precision: 12, scale: 2 }).notNull(),
+  status: text("status").notNull().default("not-started"),
+  priority: text("priority").notNull().default("medium"),
+  budget: real("budget").notNull(),
   progress: integer("progress").default(0),
-  startDate: date("start_date").notNull(),
-  deadline: date("deadline").notNull(),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  startDate: integer("start_date", { mode: "timestamp" }).notNull(),
+  deadline: integer("deadline", { mode: "timestamp" }).notNull(),
+  userId: text("user_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).defaultNow(),
 });
 
 // Import history table
-export const importHistory = pgTable("import_history", {
-  id: serial("id").primaryKey(),
-  filename: varchar("filename", { length: 255 }).notNull(),
-  status: varchar("status", { length: 50 }).notNull(),
+export const importHistory = sqliteTable("import_history", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  filename: text("filename").notNull(),
+  status: text("status").notNull(),
   recordsImported: integer("records_imported").default(0),
-  errors: jsonb("errors"),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  errors: text("errors"),
+  userId: text("user_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).defaultNow(),
 });
 
 // Relations
