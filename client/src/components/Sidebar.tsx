@@ -1,21 +1,42 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
 import { 
   LayoutDashboard, 
   FolderOpen, 
   Target, 
   Upload, 
   LogOut,
-  User
+  User as UserIcon
 } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/logout");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      window.location.href = "/";
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erreur de déconnexion",
+        description: error.message || "Une erreur est survenue lors de la déconnexion",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleLogout = () => {
-    window.location.href = "/api/logout";
+    logoutMutation.mutate();
   };
 
   const navigation = [
@@ -70,7 +91,7 @@ export default function Sidebar() {
                 className="h-8 w-8 rounded-full object-cover"
               />
             ) : (
-              <User className="h-5 w-5 text-slate-600" />
+              <UserIcon className="h-5 w-5 text-slate-600" />
             )}
           </div>
           <div className="flex-1 min-w-0">

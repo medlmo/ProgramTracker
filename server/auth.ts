@@ -90,9 +90,21 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/logout", (req, res, next) => {
+    const userId = req.user?.id;
     req.logout((err) => {
-      if (err) return next(err);
-      res.sendStatus(200);
+      if (err) {
+        console.error("Logout error:", err);
+        return next(err);
+      }
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destruction error:", err);
+          return next(err);
+        }
+        console.log("User logged out successfully:", userId);
+        res.clearCookie("sessionId");
+        res.sendStatus(200);
+      });
     });
   });
 

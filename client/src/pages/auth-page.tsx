@@ -89,7 +89,8 @@ export default function AuthPage() {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-primary-600 hover:bg-primary-700"
+                  variant="outline"
+                  className="w-full bg-white hover:bg-slate-50 text-slate-900 border-slate-200"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? "Connexion..." : "Se connecter"}
